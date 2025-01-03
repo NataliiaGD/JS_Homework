@@ -5,7 +5,6 @@ function pow(x,y) {
     }
     return result
 }
-
 const x = 2
 const y = 4
 
