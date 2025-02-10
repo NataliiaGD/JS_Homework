@@ -42,7 +42,7 @@
 									"var schema = {",
 									"    \"type\": \"object\",",
 									"    \"properties\":{",
-									"        \"status\": {\"type\":\"boolean\"},",
+									"        \"status\": {\"type\":\"string\"},",
 									"        \"message\":{\"type\":\"string\"}",
 									"    },",
 									"    \"required\": [\"status\",\"message\"]",
@@ -567,7 +567,38 @@
 						"exec": [
 							"var jsonData = pm.response.json();",
 							"pm.collectionVariables.set(\"userID\", jsonData.data.userId);",
-							""
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"var schema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"status\": {\"type\": \"string\"},",
+							"        \"data\": {",
+							"            \"type\": \"object\",",
+							"            \"properties\": {",
+							"                \"userId\": {\"type\": \"integer\"},",
+							"                \"photoFilename\": {\"type\": \"string\"},",
+							"                \"distanceUnits\": {\"type\": \"string\"},",
+							"                \"currency\": {\"type\": \"string\"}",
+							"            },",
+							"            \"required\": [\"userId\", \"photoFilename\", \"distanceUnits\", \"currency\"]",
+							"        }",
+							"    },",
+							"    \"required\": [\"status\", \"data\"]",
+							"};",
+							"",
+							"var response = pm.response.json();",
+							"",
+							"pm.test('JSON schema is valid', function () {",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -677,15 +708,26 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Сheck response fields value\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.data.name).to.eql(\"John\"),",
-							"    pm.expect(jsonData.data.lastName).to.eql(\"Dou\"),",
-							"    pm.expect(jsonData.data.dateBirth).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/);",
-							"    pm.expect(jsonData.data.country).to.eql(\"Ukraine\")",
-							"    pm.expect(jsonData.data.photoFilename).to.eql(\"default-user.png\")",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Сheck name field value\", function () {",
+							"    pm.expect(jsonData.data.name).to.eql(\"John\")",
 							"});",
-							""
+							"",
+							"pm.test(\"Сheck lastName field value\", function () {",
+							"    pm.expect(jsonData.data.lastName).to.eql(\"Dou\")",
+							"});",
+							"",
+							"pm.test(\"Сheck dateBirth field value\", function () {",
+							"    pm.expect(jsonData.data.dateBirth).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/)",
+							"});",
+							"",
+							"pm.test(\"Сheck country field value\", function () {",
+							"    pm.expect(jsonData.data.country).to.eql(\"Ukraine\")",
+							"});",
+							"",
+							"pm.test(\"Сheck photoFilename field value\", function () {",
+							"    pm.expect(jsonData.data.photoFilename).to.eql(\"default-user.png\")",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -853,6 +895,33 @@
 		},
 		{
 			"name": "login with new password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check userId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    const userID = pm.collectionVariables.get(\"userID\");",
+							"    pm.expect(jsonData.data.userId).to.eql(userID);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Check status\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"ok\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -953,7 +1022,18 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							""
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							"pm.test(\"Status code name has string OK\", function () {",
+							"    pm.response.to.have.status(\"OK\");",
+							"});",
+							"",
+							"pm.test(\"Check status\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"ok\");",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
