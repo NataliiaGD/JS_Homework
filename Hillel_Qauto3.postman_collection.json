@@ -691,7 +691,7 @@
 									"",
 									"pm.collectionVariables.set(\"email1\", pm.variables.replaceIn(\"{{$randomEmail}}\"));",
 									"",
-									"const baseUrl = pm.variables.get(\"base_url\"); // This pulls base_url from the environment or collection",
+									"const baseUrl = pm.variables.get(\"base_url\");",
 									"",
 									"pm.sendRequest({",
 									"    url: `${baseUrl}/auth/signup`,",
