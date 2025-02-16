@@ -1,0 +1,11 @@
+test_email,base_url
+,https://qauto2.forstudy.space/api
+null,https://qauto2.forstudy.space/api
+123,https://qauto2.forstudy.space/api
+test#com,https://qauto2.forstudy.space/api
+test@,https://qauto2.forstudy.space/api
+,https://qauto.forstudy.space/api
+null,https://qauto.forstudy.space/api
+123,https://qauto.forstudy.space/api
+test#com,https://qauto.forstudy.space/api
+test@,https://qauto.forstudy.space/api
