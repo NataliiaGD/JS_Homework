@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "7bc3e7ae-451c-4e18-aeb2-c35383aad3de",
+		"name": "Ukrainian_Cities",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21930313"
+	},
+	"item": [
+		{
+			"name": "GetAllCities",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var cityIds = jsonData.data.getAllCities.map(city => city.id);",
+							"var randomCityIds = cityIds.sort(() => 0.5 - Math.random()).slice(0, 4);",
+							"",
+							"pm.collectionVariables.set(\"randomIds\", JSON.stringify(randomCityIds));",
+							"console.log(pm.collectionVariables.get(\"randomIds\"));",
+							"",
+							"var square = jsonData.data.getAllCities.map(city => city.square);",
+							"var totalSquare = square.reduce((sum, square) => sum + square, 0);",
+							"var averageSquare = totalSquare / square.length;",
+							"pm.collectionVariables.set(\"averageSquare\", parseFloat(averageSquare));",
+							"",
+							"console.log(averageSquare);",
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{\r\n  getAllCities{\r\n    id\r\n    name\r\n    square\r\n    ... on City{\r\n        description\r\n    }\r\n  }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCityDescriptionById",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var randomIds = JSON.parse(pm.collectionVariables.get(\"randomIds\"));",
+							"",
+							"pm.collectionVariables.set(\"id1\", randomIds[0]);",
+							"pm.collectionVariables.set(\"id2\", randomIds[1]);",
+							"pm.collectionVariables.set(\"id3\", randomIds[2]);",
+							"pm.collectionVariables.set(\"id4\", randomIds[3]);",
+							"",
+							"console.log(\"City IDs Set:\", randomIds[0], randomIds[1], randomIds[2], randomIds[3]);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query GetCities($id1: ID!, $id2: ID!, $id3: ID!, $id4: ID!) {\r\n  city1: getCityDescription(id: $id1)\r\n  city2: getCityDescription(id: $id2)\r\n  city3: getCityDescription(id: $id3)\r\n  city4: getCityDescription(id: $id4)\r\n}\r\n",
+						"variables": "{\n  \"id1\": \"{{id1}}\",\n  \"id2\": \"{{id2}}\",\n  \"id3\": \"{{id3}}\",\n  \"id4\": \"{{id4}}\"\n}\n"
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCityiesByRangeId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{\r\n  getCityByRangeId(filter:{minId:1, maxId:25}){\r\n    id\r\n    name\r\n    square\r\n  }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddCity",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"name\", pm.variables.replaceIn(\"{{$randomFirstName}}\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation AddCity($name: String!, $square: Float!) {\r\n  addCity(name: $name, square: $square, description: \"Best\") {\r\n    id\r\n    name\r\n    square\r\n    ... on City {\r\n      description\r\n    }\r\n  }\r\n}\r\n",
+						"variables": "{\n  \"square\": {{averageSquare}},\n  \"name\": \"{{$randomFirstName}}\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "randomId",
+			"value": ""
+		},
+		{
+			"key": "randomIds",
+			"value": ""
+		},
+		{
+			"key": "id1",
+			"value": ""
+		},
+		{
+			"key": "id2",
+			"value": ""
+		},
+		{
+			"key": "id3",
+			"value": ""
+		},
+		{
+			"key": "id4",
+			"value": ""
+		},
+		{
+			"key": "averageSquare",
+			"value": ""
+		},
+		{
+			"key": "name",
+			"value": ""
+		}
+	]
+}
